@@ -1,11 +1,7 @@
 package course.controller
 
-import course.converters.NumberConverter
-import course.exceptions.UnsupportedMathOperationException
-import course.math.SimpleMath
 import course.model.Person
 import course.services.PersonService
-import jakarta.websocket.server.PathParam
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,10 +17,8 @@ import java.util.concurrent.atomic.AtomicLong
 @RestController
 @RequestMapping("/person")
 class PersonController {
-    val logger: Logger = LoggerFactory.getLogger(MathController::class.java)
+    val logger: Logger = LoggerFactory.getLogger(PersonController::class.java)
     val counter: AtomicLong = AtomicLong()
-
-    private val math: SimpleMath= SimpleMath()
 
     @Autowired
     private lateinit var service: PersonService
