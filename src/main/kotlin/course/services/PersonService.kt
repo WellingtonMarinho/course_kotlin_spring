@@ -1,66 +1,56 @@
 package course.services
 
-
+import course.exceptions.ResourceNotFoundException
 import course.model.Person
+import course.repository.PersonRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.concurrent.atomic.AtomicLong
 
 
 @Service
 class PersonService {
-    val counter: AtomicLong = AtomicLong()
+
+    @Autowired
+    private lateinit var repository: PersonRepository
+
     private val  logger: Logger = LoggerFactory.getLogger(PersonService::class.java.name)
 
     fun findAll(): List<Person> {
         logger.info("Finding all people!")
-
-        val persons: MutableList<Person> = ArrayList()
-        for (index in 0..7 ){
-            val person = MockPerson(index=index)
-            persons.add(person)
-        }
-        return persons
+        return repository.findAll()
     }
 
     fun findById(id: Long): Person {
         logger.info("Finding one person!")
-        val firstName  ="Wellington"
-        val lastName = "Soares"
-        val address = "Avenida Mario Lopes Leão"
-        val gender = "Macho"
-
-        val person = Person(
-            id=counter.incrementAndGet(),
-            firstName=firstName,
-            lastName=lastName,
-            address=address,
-            gender=gender
-        )
-
-        return person
+        return repository.findById(id)
+            .orElseThrow { ResourceNotFoundException("No records found for this ID") }
     }
 
-    fun create(person: Person) = person
+    fun create(person: Person) : Person {
+        logger.info("Creating one person with name ${person.firstName}")
+        return repository.save(person)
+    }
 
-    fun update(person: Person) = person
+    fun update(person: Person) : Person{
+        logger.info("Updating one person with ID ${person.id}")
+        val entity = repository.findById(person.id)
+            .orElseThrow { ResourceNotFoundException("No records found for this ID") }
 
-    fun delete(id: Long) {}
+        entity.firstName  = person.firstName
+        entity.lastName = person.lastName
+        entity.address = person.address
+        entity.gender = person.gender
 
-    private fun MockPerson(index: Int): Person {
-        val firstName  ="Wellington $index"
-        val lastName = "Soares $index"
-        val address = "Avenida Mario Lopes Leão $index"
-        val gender = "Macho $index"
+        return repository.save(entity)
+    }
 
-        val person = Person(
-            id=counter.incrementAndGet(),
-            firstName=firstName,
-            lastName=lastName,
-            address=address,
-            gender=gender
-        )
-        return person
+    fun delete(id: Long) {
+        logger.info("Deleting one person with ID $id")
+
+        val entity = repository.findById(id)
+            .orElseThrow { ResourceNotFoundException("No records found for this ID!") }
+        repository.delete(entity)
     }
 }

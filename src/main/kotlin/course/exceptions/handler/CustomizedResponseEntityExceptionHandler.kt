@@ -1,5 +1,7 @@
-package course.exceptions
+package course.exceptions.handler
 
+import course.exceptions.ExceptionResponse
+import course.exceptions.ResourceNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -7,15 +9,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
-import java.util.Date
-
+import java.util.*
 
 @ControllerAdvice
 @RestController
 class CustomizedResponseEntityExceptionHandler : ResponseEntityExceptionHandler(){
 
     @ExceptionHandler(Exception::class)
-    fun handleAllExceptions(ex: Exception, request: WebRequest): ResponseEntity< ExceptionResponse> {
+    fun handleAllExceptions(ex: Exception, request: WebRequest): ResponseEntity<ExceptionResponse> {
         val exceptionResponse = ExceptionResponse(
             Date(),
             ex.message,
@@ -25,7 +26,7 @@ class CustomizedResponseEntityExceptionHandler : ResponseEntityExceptionHandler(
     }
 
     @ExceptionHandler(ResourceNotFoundException::class)
-    fun handleResourceNotFoundException(ex: Exception, request: WebRequest): ResponseEntity< ExceptionResponse> {
+    fun handleResourceNotFoundException(ex: Exception, request: WebRequest): ResponseEntity<ExceptionResponse> {
         val exceptionResponse = ExceptionResponse(
             Date(),
             ex.message,
